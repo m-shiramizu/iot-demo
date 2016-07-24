@@ -30,7 +30,7 @@ def signalhandler(num, frame):
 signal.signal(signal.SIGINT, signalhandler)
 
 
-class Sensor:
+class Sensor_SEN136B5B:
     """ 
     センサー  
     """
@@ -103,7 +103,7 @@ class Sensor:
             print(e)
             return None
 
-sensor = Sensor()
+sensor = Sensor_SEN136B5B()
 
 while True:
     values = sensor.readValue()
