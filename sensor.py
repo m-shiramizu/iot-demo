@@ -70,7 +70,7 @@ class Sensor:
         distance = ((end - start) * 1000000) / 29 / 2
         distance = distance > 400 and 400 or distance  # 最大距離
         distance_val = int(round(distance, 0))
-        print "cnt %s  distance  %.3f cm" % (cnt, distance)
+#        print "cnt %s  distance  %.3f cm" % (cnt, distance)
 
         now_jst = now.strftime("%Y-%m-%d %H:%M:%S.%f")
         now_unixtime = now.strftime("%s.%f")
@@ -109,5 +109,7 @@ while True:
     values = sensor.readValue()
     print values
     resp = sensor.registToKintone(SUBDOMAIN, values, API_TOKEN)
-    print "status : %s msg : %s reason : %s " % (resp.status, resp.msg, resp.reason)
+# print "status : %s msg : %s reason : %s " % (resp.status, resp.msg,
+# resp.reason)
+    print "result: %s distance: %s cm" % (rsp.reason, values[0]['attributes']['distance'])
     time.sleep(INTERVAL)
