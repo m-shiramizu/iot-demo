@@ -111,5 +111,5 @@ while True:
     resp = sensor.registToKintone(SUBDOMAIN, values, API_TOKEN)
 # print "status : %s msg : %s reason : %s " % (resp.status, resp.msg,
 # resp.reason)
-    print "result: %s distance: %s cm" % (rsp.reason, values[0]['attributes']['distance'])
+    print "result: %s distance: %s cm" % (resp.reason, values[0]['attributes']['distance'])
     time.sleep(INTERVAL)
