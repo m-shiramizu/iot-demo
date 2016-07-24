@@ -107,7 +107,7 @@ sensor = Sensor()
 
 while True:
     values = sensor.readValue()
-    print values
+#    print values
     resp = sensor.registToKintone(SUBDOMAIN, values, API_TOKEN)
 # print "status : %s msg : %s reason : %s " % (resp.status, resp.msg,
 # resp.reason)
