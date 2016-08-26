@@ -22,7 +22,11 @@ OUTPUT_FILE = configfile.get("gcs","output_file")
 
 SENSOR_PIN = int(configfile.get("sensor","pin"))
 INTERVAL = float(configfile.get("sensor","interval"))
-SHUTTER_DISTANCE = int(configfile.get("sensor","shutter_distance"))
+SHUTTER_DISTANCE_MIN = int(configfile.get("sensor","shutter_distance_min"))
+SHUTTER_DISTANCE_MAX = int(configfile.get("sensor","shutter_distance_max"))
+
+VERTICAL = int(configfile.get("camera","vertical"))
+HORIZONTAL = int(configfile.get("camera","horizontal"))
 
 # マイクロ秒sleep
 usleep = lambda x: time.sleep(x / 1000000.0)
@@ -98,19 +102,19 @@ client = storage.Client(project=PROJECT_ID)
 bucket = client.get_bucket(UPLOAD_BUCKET)
 
 with picamera.PiCamera() as camera:
-  camera.resolution = (2592, 1944)
+  camera.resolution = (VERTICAL, HORIZONTAL)
   camera.start_preview()
 
   while True:
     value = sensor.readValue()
     distance = int(value['attributes']['distance'])
     print distance
-    ## 閾値を超えたら
-    if distance <= SHUTTER_DISTANCE:
+    ## ある範囲に入ったら
+    if SHUTTER_DISTANCE_MIN <= distance <= SHUTTER_DISTANCE_MAX:
       #time.sleep(5)
       camera.capture(UPLOAD_FILE)
-      print "ok  %d" % distance
-      time.sleep(5)
+      print "ok  %d <=  %d  <= %d" % (SHUTTER_DISTANCE_MIN,distance,SHUTTER_DISTANCE_MAX)
+#      time.sleep(5)
       outputfile = OUTPUT_FILE + datetime.now().strftime("%Y%m%d%H%M%S%f") + ".jpg"
       print outputfile
       blob = Blob(outputfile, bucket)
