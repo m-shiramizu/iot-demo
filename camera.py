@@ -27,6 +27,9 @@ SHUTTER_DISTANCE_MAX = int(configfile.get("sensor","shutter_distance_max"))
 
 VERTICAL = int(configfile.get("camera","vertical"))
 HORIZONTAL = int(configfile.get("camera","horizontal"))
+BRIGHTNESS = int(configfile.get("camera","brightness"))
+CONTRAST = int(configfile.get("camera","contrast"))
+SHARPNESS = int(configfile.get("camera","sharpness"))
 
 # マイクロ秒sleep
 usleep = lambda x: time.sleep(x / 1000000.0)
@@ -103,6 +106,9 @@ bucket = client.get_bucket(UPLOAD_BUCKET)
 
 with picamera.PiCamera() as camera:
   camera.resolution = (VERTICAL, HORIZONTAL)
+  camera.brightness = BRIGHTNESS
+  camera.contrast = CONTRAST
+  camera.sharpness = SHARPNESS
   camera.start_preview()
 
   while True:
@@ -111,12 +117,11 @@ with picamera.PiCamera() as camera:
     print distance
     ## ある範囲に入ったら
     if SHUTTER_DISTANCE_MIN <= distance <= SHUTTER_DISTANCE_MAX:
-      #time.sleep(5)
       camera.capture(UPLOAD_FILE)
       print "ok  %d <=  %d  <= %d" % (SHUTTER_DISTANCE_MIN,distance,SHUTTER_DISTANCE_MAX)
-#      time.sleep(5)
       outputfile = OUTPUT_FILE + datetime.now().strftime("%Y%m%d%H%M%S%f") + ".jpg"
       print outputfile
+      
       blob = Blob(outputfile, bucket)
       with open(UPLOAD_FILE, 'rb') as my_file:
         blob.upload_from_file(my_file)
