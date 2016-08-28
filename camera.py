@@ -146,10 +146,9 @@ try:
                 pygame.mixer.init()
                 pygame.mixer.music.load('sound/meka_ge_cam08.mp3')
                 pygame.mixer.music.play(1) # loop count
-                time.sleep(20)   #20秒再生
-                pygame.mixer.music.stop()  #停止
-
                 camera.capture(UPLOAD_FILE)
+                time.sleep(1)   
+                pygame.mixer.music.stop()  #停止
                 led.ledctl('off',3,0)
                 print "ok  %d <=  %d  <= %d" % (SHUTTER_DISTANCE_MIN,distance,SHUTTER_DISTANCE_MAX)
                 outputfile = OUTPUT_FILE + datetime.now().strftime("%Y%m%d%H%M%S%f") + ".jpg"
