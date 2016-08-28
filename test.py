@@ -1,11 +1,41 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/python
+# coding: utf-8
 
-from gcloud import storage
-from gcloud.storage import Blob
+# GPIOモジュールインポート
+import RPi.GPIO as GPIO
+# timeモジュールインポート
+import time
 
-client = storage.Client(project='my-project')
-bucket = client.get_bucket('my-bucket')
-encryption_key = 'aa426195405adee2c8081bb9e7e74b19'
-blob = Blob('secure-data', bucket)
-with open('my-file', 'rb') as my_file:
-  blob.upload_from_file(my_file,encryption_key=encryption_key)
+# LED点滅パターン
+ledPat = {
+  "on":     (1, 1, 1, 1),
+  "off":    (0, 0, 0, 0),
+  "blink1": (0, 1, 0, 1),
+  "blink2": (0, 0, 0, 1)
+}
+
+
+# GPIOモード設定
+# GPIO番号指定をBCM(GPIO番号)に設定
+GPIO.setmode(GPIO.BCM)
+
+# GPIOの初期化(天気用LEDのみ)
+GPIO.setup(21, GPIO.OUT)
+
+#   LED点滅処理
+try:
+
+  while True:
+    for var in range(0, 4):
+      for num in range(0, len(ledPat)):
+        GPIO.output(21, ledPat['blink2'][num])
+        time.sleep(0.25)
+    for var in range(0, 4):
+      for num in range(0, len(ledPat)):
+        GPIO.output(21, ledPat['blink1'][num])
+        time.sleep(0.10)
+      
+  
+finally:
+
+  GPIO.cleanup()
