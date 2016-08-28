@@ -6,13 +6,6 @@ import RPi.GPIO as GPIO
 # timeモジュールインポート
 import time
 
-# LED点滅パターン
-ledPat = {
-  "on":     (1, 1, 1, 1),
-  "off":    (0, 0, 0, 0),
-  "blink1": (0, 1, 0, 1),
-  "blink2": (0, 0, 0, 1)
-}
 
 
 # GPIOモード設定
@@ -22,20 +15,20 @@ GPIO.setmode(GPIO.BCM)
 # GPIOの初期化(天気用LEDのみ)
 GPIO.setup(21, GPIO.OUT)
 
-#   LED点滅処理
+GPIO.setup(18, GPIO.IN)
+
+
 try:
-
   while True:
-    for var in range(0, 4):
-      for num in range(0, len(ledPat)):
-        GPIO.output(21, ledPat['blink2'][num])
-        time.sleep(0.25)
-    for var in range(0, 4):
-      for num in range(0, len(ledPat)):
-        GPIO.output(21, ledPat['blink1'][num])
-        time.sleep(0.10)
-      
-  
-finally:
+    if GPIO.input(18) == GPIO.HIGH:
+      print "on"
+      GPIO.output(21, 1)
+    else:
+      print "off"
+      GPIO.output(21, 0)
+      time.sleep(0.5)
+except KeyboardInterrupt:
+  GPIO.cleanup()
 
+finally:
   GPIO.cleanup()

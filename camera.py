@@ -121,9 +121,24 @@ class Redled:
 client = storage.Client(project=PROJECT_ID)
 bucket = client.get_bucket(UPLOAD_BUCKET)
 
+
+# high
+def myCallBack(channel):
+    global flag
+    if channel == 18:
+        if flag == 0:
+            flag = 1
+            print "on %s" % flag
+        else:
+            flag = 0
+            print "off %s" % flag
+
 try:
+    flag = 0
     sensor = Sensor_SEN136B5B(SENSOR_PIN)
     led = Redled(21)
+    GPIO.setup(18, GPIO.IN)
+    GPIO.add_event_detect(18, GPIO.RISING, callback=myCallBack, bouncetime=200)
 
     with picamera.PiCamera() as camera:
         camera.resolution = (VERTICAL, HORIZONTAL)
@@ -133,30 +148,34 @@ try:
         camera.start_preview()
 
         while True:
-            value = sensor.readValue()
-            led.ledctl('on',1,0)
-            distance = int(value['attributes']['distance'])
-            print distance
-            ## ある範囲に入ったら
-            if SHUTTER_DISTANCE_MIN <= distance <= SHUTTER_DISTANCE_MAX:
-                # LED 点滅
-                led.ledctl('blink2',3,0.25)
-                led.ledctl('blink1',3,0.25)
-
-                pygame.mixer.init()
-                pygame.mixer.music.load('sound/meka_ge_cam08.mp3')
-                pygame.mixer.music.play(1) # loop count
-                camera.capture(UPLOAD_FILE)
-                time.sleep(1)   
-                pygame.mixer.music.stop()  #停止
+            print flag
+            if flag == 1:
+                value = sensor.readValue()
+                led.ledctl('on',1,0)
+                distance = int(value['attributes']['distance'])
+                print distance
+                ## ある範囲に入ったら
+                if SHUTTER_DISTANCE_MIN <= distance <= SHUTTER_DISTANCE_MAX:
+                    # LED 点滅
+                    led.ledctl('blink2',3,0.25)
+                    led.ledctl('blink1',3,0.25)
+                    pygame.mixer.init()
+                    pygame.mixer.music.load('sound/meka_ge_cam08.mp3')
+                    pygame.mixer.music.play(1) # loop count
+                    camera.capture(UPLOAD_FILE)
+                    time.sleep(1)   
+                    pygame.mixer.music.stop()  #停止
+                    led.ledctl('off',3,0)
+                    print "ok  %d <=  %d  <= %d" % (SHUTTER_DISTANCE_MIN,distance,SHUTTER_DISTANCE_MAX)
+                    outputfile = OUTPUT_FILE + datetime.now().strftime("%Y%m%d%H%M%S%f") + ".jpg"
+                    print outputfile
+                    time.sleep(5)     
+                    blob = Blob(outputfile, bucket)
+                    with open(UPLOAD_FILE, 'rb') as my_file:
+                        blob.upload_from_file(my_file)
+            else:
                 led.ledctl('off',3,0)
-                print "ok  %d <=  %d  <= %d" % (SHUTTER_DISTANCE_MIN,distance,SHUTTER_DISTANCE_MAX)
-                outputfile = OUTPUT_FILE + datetime.now().strftime("%Y%m%d%H%M%S%f") + ".jpg"
-                print outputfile
-                time.sleep(5)     
-                blob = Blob(outputfile, bucket)
-                with open(UPLOAD_FILE, 'rb') as my_file:
-                    blob.upload_from_file(my_file)
+                    
 
             time.sleep(INTERVAL)
 
