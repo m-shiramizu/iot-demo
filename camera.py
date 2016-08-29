@@ -58,7 +58,6 @@ class Sensor_SEN136B5B:
     
     def readValue(self):
         now = 0
-
         GPIO.setup(self.pin, GPIO.OUT)   # 出力指定
         GPIO.output(self.pin, 0)   # ピンの出力を0Vにする
         usleep(2)
