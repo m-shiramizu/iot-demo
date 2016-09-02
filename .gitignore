@@ -94,4 +94,7 @@ ENV/
 TAGS
 
 # ini
-.ini
+config/*.ini
+
+# jpg
+*.jpg

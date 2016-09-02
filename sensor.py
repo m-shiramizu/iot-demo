@@ -17,12 +17,6 @@ API_TOKEN = configfile.get("iot_board","api_token")  # APIトークン
 SENSOR_PIN = int(configfile.get("sensor","pin"))  # センサーのGPIO番号
 INTERVAL = float(configfile.get("sensor","interval"))  # 測定間隔（秒）
 
-#param = sys.argv
-#SUBDOMAIN = param[1]  # URL
-#API_TOKEN = param[2]  # APIトークン
-#SENSOR_PIN = int(param[3])  # センサーのGPIO番号
-#INTERVAL = float(param[4])  # 測定間隔（秒）
-
 # マイクロ秒sleep
 usleep = lambda x: time.sleep(x / 1000000.0)
 
@@ -132,7 +126,6 @@ class Redled:
 # high
 def myCallBack(channel):
     global flag
-    print "callback %s" % flag
     if channel == 18:
         if flag == 0:
             flag = 1
@@ -149,7 +142,7 @@ try:
     GPIO.add_event_detect(18, GPIO.RISING, callback=myCallBack, bouncetime=200)
     while True:
         values = sensor.readValue()
-        print flag
+#        print flag
         if flag == 1:
             led.ledctl('on',1,0)
             resp = sensor.registToKintone(SUBDOMAIN, values, API_TOKEN)
